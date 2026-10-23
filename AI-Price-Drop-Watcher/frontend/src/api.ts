@@ -11,7 +11,7 @@ import {
   MonitoringRunResult
 } from './types';
 
-const API_BASE = ''; // Proxied via Vite to FastAPI
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export async function fetchHealth(): Promise<{ status: string; service: string }> {
   const res = await fetch(`${API_BASE}/health`);

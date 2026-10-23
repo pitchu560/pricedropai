@@ -1,5 +1,6 @@
 import express from 'express';
 import http from 'http';
+import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn, ChildProcess } from 'child_process';
@@ -18,7 +19,13 @@ let isShuttingDown = false;
 function startFastAPIServer() {
   if (isShuttingDown) return;
 
-  console.log('[Node Host] Starting FastAPI backend process on port ' + FASTAPI_PORT + '...');
+  // If BACKEND_URL is provided (e.g., via Vercel service binding), skip local spawn
+  if (process.env.BACKEND_URL) {
+    console.log(`[Node Host] Using configured BACKEND_URL binding: ${process.env.BACKEND_URL}`);
+    return;
+  }
+
+  console.log('[Node Host] Starting local FastAPI backend process on port ' + FASTAPI_PORT + '...');
   
   pythonProcess = spawn(
     'python3',
@@ -46,7 +53,7 @@ function startFastAPIServer() {
   pythonProcess.on('exit', (code, signal) => {
     console.log(`[FastAPI] Process exited with code ${code}, signal ${signal}`);
     pythonProcess = null;
-    if (!isShuttingDown) {
+    if (!isShuttingDown && !process.env.BACKEND_URL) {
       console.log('[FastAPI] Respawning FastAPI process in 1 second...');
       setTimeout(startFastAPIServer, 1000);
     }
@@ -55,33 +62,36 @@ function startFastAPIServer() {
 
 // Proxy incoming request to FastAPI backend with retry
 function proxyToFastAPI(req: express.Request, res: express.Response, retryCount = 0) {
-  const targetUrl = new URL(req.originalUrl || req.url, `http://127.0.0.1:${FASTAPI_PORT}`);
+  const backendBase = process.env.BACKEND_URL || `http://127.0.0.1:${FASTAPI_PORT}`;
+  const targetUrl = new URL(req.originalUrl || req.url, backendBase);
+  const isHttps = targetUrl.protocol === 'https:';
+  const clientModule = isHttps ? https : http;
 
   const options: http.RequestOptions = {
-    hostname: '127.0.0.1',
-    port: FASTAPI_PORT,
+    hostname: targetUrl.hostname,
+    port: targetUrl.port ? Number(targetUrl.port) : (isHttps ? 443 : 80),
     path: targetUrl.pathname + targetUrl.search,
     method: req.method,
     headers: {
       ...req.headers,
-      host: `127.0.0.1:${FASTAPI_PORT}`,
+      host: targetUrl.host,
     },
   };
 
-  const proxyReq = http.request(options, (proxyRes) => {
+  const proxyReq = clientModule.request(options, (proxyRes) => {
     res.writeHead(proxyRes.statusCode || 500, proxyRes.headers);
     proxyRes.pipe(res, { end: true });
   });
 
   proxyReq.on('error', (err) => {
-    if (retryCount < 5) {
-      // Backend might still be starting up, retry shortly
+    if (retryCount < 5 && !process.env.BACKEND_URL) {
+      // Backend might still be starting up in local mode, retry shortly
       setTimeout(() => proxyToFastAPI(req, res, retryCount + 1), 500);
     } else {
       console.error('[Proxy Error] Could not connect to FastAPI backend:', err.message);
       res.status(502).json({
         error: 'FastAPI Backend Unavailable',
-        message: 'Could not connect to Python backend on port 8080. Ensure dependencies are installed.',
+        message: `Could not connect to Python backend at ${backendBase}.`,
       });
     }
   });
@@ -100,6 +110,7 @@ async function main() {
 
   // API and docs routes to proxy to FastAPI
   const apiPrefixes = [
+    '/api',
     '/products',
     '/alerts',
     '/approvals',

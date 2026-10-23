@@ -57,7 +57,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Include routers at root
 app.include_router(products.router)
 app.include_router(alerts.router)
 app.include_router(approvals.router)
@@ -65,7 +65,18 @@ app.include_router(verification_logs.router)
 app.include_router(dataset.router)
 app.include_router(monitoring.router)
 
+# Include routers under /api for Vercel /api/* routing
+from fastapi import APIRouter
+api_router = APIRouter(prefix="/api")
+api_router.include_router(products.router)
+api_router.include_router(alerts.router)
+api_router.include_router(approvals.router)
+api_router.include_router(verification_logs.router)
+api_router.include_router(dataset.router)
+api_router.include_router(monitoring.router)
+
 @app.get("/health", status_code=status.HTTP_200_OK, tags=["Health"])
+@api_router.get("/health", status_code=status.HTTP_200_OK, tags=["Health"])
 def health_check():
     """
     Service health probe for uptime and subsystem verification.
@@ -78,6 +89,8 @@ def health_check():
         "decision_engine": "operational",
         "cart_simulator": "approval_gated_safe"
     }
+
+app.include_router(api_router)
 
 if __name__ == "__main__":
     import uvicorn
