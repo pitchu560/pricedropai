@@ -1,0 +1,7 @@
+product_id,name,url,variant,seller,target_price,currency,is_active
+PROD-SNY-WH1000XM5,Sony WH-1000XM5 Wireless Headphones,https://demo-store.internal/items/sony-wh1000xm5-silver,Silver / Over-Ear,Sony Direct Store,329.99,USD,1
+PROD-APL-MBP14-M3,Apple MacBook Pro 14" M3 Pro,https://demo-store.internal/items/macbook-pro-14-m3-space-black,Space Black / 18GB / 512GB,Apple Authorized,1849.00,USD,1
+PROD-LOG-MXMSTR3S,Logitech MX Master 3S Performance Mouse,https://demo-store.internal/items/logitech-mx-master-3s-graphite,Graphite / Ergonomic,Logitech Official,89.99,USD,1
+PROD-DEL-U2723QE,Dell UltraSharp 27" 4K USB-C Hub Monitor,https://demo-store.internal/items/dell-ultrasharp-u2723qe,Platinum Silver / 4K IPS,Dell Official Partner,499.00,USD,1
+PROD-KIN-PW11TH,Kindle Paperwhite 16GB Waterproof,https://demo-store.internal/items/kindle-paperwhite-16gb-black,Black / 16GB / Without Lockscreen Ads,Demo Merchant Retail,129.99,USD,1
+PROD-BOS-QCULTRA,Bose QuietComfort Ultra Noise Cancelling,https://demo-store.internal/items/bose-qc-ultra-black,Black / Spatial Audio,Bose Direct,379.00,USD,1

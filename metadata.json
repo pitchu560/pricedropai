@@ -1,0 +1,8 @@
+{
+  "name": "AI Price Drop Watcher Agent",
+  "description": "Autonomous full-stack price drop monitoring agent with evidence verification, anti-hallucination decision engine, approval-gated simulated cart actions, and comprehensive analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

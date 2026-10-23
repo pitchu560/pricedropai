@@ -1,0 +1,9 @@
+test_id,product_id,scenario_name,test_price,test_variant,test_seller,test_freshness_seconds,expected_decision,expected_alert,description
+TC-01,PROD-SNY-WH1000XM5,Legitimate Flash Sale Drop,299.99,Silver / Over-Ear,Sony Direct Store,120,CONFIRMED_DROP,TRUE,Valid seller and variant with price 299.99 well below target 329.99
+TC-02,PROD-SNY-WH1000XM5,Price Drop on Refurbished Variant,279.00,Refurbished Black / Over-Ear,Sony Direct Store,300,WRONG_VARIANT,FALSE,Price is cheap but variant does not match required Silver new condition
+TC-03,PROD-APL-MBP14-M3,Unauthorized Marketplace Seller,1699.00,Space Black / 18GB / 512GB,QuickDealz Global Warehouse,600,SELLER_MISMATCH,FALSE,Third-party seller mismatch prevents false alert
+TC-04,PROD-LOG-MXMSTR3S,Expired Cached Promotion,79.99,Graphite / Ergonomic,Logitech Official,259200,STALE_EVIDENCE,FALSE,Observation timestamp is 3 days old exceeding freshness threshold
+TC-05,PROD-DEL-U2723QE,Price Above Target Threshold,519.00,Platinum Silver / 4K IPS,Dell Official Partner,180,UNCHANGED,FALSE,Price is 519.00 which is above target price 499.00
+TC-06,PROD-KIN-PW11TH,Scraper Zero Price Glitch,0.00,Black / 16GB / Without Lockscreen Ads,Demo Merchant Retail,60,INVALID_PRICE,FALSE,Zero price indicating parsing error or out-of-stock anomaly
+TC-07,PROD-BOS-QCULTRA,Missing Crucial Variant Metadata,349.00,,Bose Direct,150,MISSING_DATA,FALSE,Variant field missing from payload prevents hallucinated drop
+TC-08,PROD-APL-MBP14-M3,Abnormal 95% Flash Discount,99.00,Space Black / 18GB / 512GB,Unknown Outlet,45,UNCERTAIN,FALSE,Extreme drop percentage with unknown seller marked UNCERTAIN

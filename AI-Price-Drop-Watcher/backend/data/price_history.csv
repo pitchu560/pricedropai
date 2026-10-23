@@ -1,0 +1,12 @@
+product_id,observed_price,currency,variant_observed,seller_observed,source_url,timestamp,is_valid,notes
+PROD-SNY-WH1000XM5,399.99,USD,Silver / Over-Ear,Sony Direct Store,https://demo-store.internal/items/sony-wh1000xm5-silver,2026-10-15T08:00:00Z,1,Initial launch MSRP observation
+PROD-SNY-WH1000XM5,379.99,USD,Silver / Over-Ear,Sony Direct Store,https://demo-store.internal/items/sony-wh1000xm5-silver,2026-10-18T12:00:00Z,1,Fall promotional discount
+PROD-SNY-WH1000XM5,349.99,USD,Silver / Over-Ear,Sony Direct Store,https://demo-store.internal/items/sony-wh1000xm5-silver,2026-10-21T16:30:00Z,1,Pre-holiday sale
+PROD-APL-MBP14-M3,1999.00,USD,Space Black / 18GB / 512GB,Apple Authorized,https://demo-store.internal/items/macbook-pro-14-m3-space-black,2026-10-14T09:00:00Z,1,Standard retail price
+PROD-APL-MBP14-M3,1949.00,USD,Space Black / 18GB / 512GB,Apple Authorized,https://demo-store.internal/items/macbook-pro-14-m3-space-black,2026-10-19T14:15:00Z,1,Member privilege weekend pricing
+PROD-LOG-MXMSTR3S,99.99,USD,Graphite / Ergonomic,Logitech Official,https://demo-store.internal/items/logitech-mx-master-3s-graphite,2026-10-12T10:00:00Z,1,Baseline MSRP
+PROD-LOG-MXMSTR3S,94.99,USD,Graphite / Ergonomic,Logitech Official,https://demo-store.internal/items/logitech-mx-master-3s-graphite,2026-10-17T11:20:00Z,1,Mid-month bundle price
+PROD-DEL-U2723QE,579.99,USD,Platinum Silver / 4K IPS,Dell Official Partner,https://demo-store.internal/items/dell-ultrasharp-u2723qe,2026-10-10T08:45:00Z,1,Standard catalog listing
+PROD-DEL-U2723QE,529.00,USD,Platinum Silver / 4K IPS,Dell Official Partner,https://demo-store.internal/items/dell-ultrasharp-u2723qe,2026-10-20T10:00:00Z,1,Corporate savings promotion
+PROD-KIN-PW11TH,149.99,USD,Black / 16GB / Without Lockscreen Ads,Demo Merchant Retail,https://demo-store.internal/items/kindle-paperwhite-16gb-black,2026-10-16T15:00:00Z,1,Standard retail price
+PROD-BOS-QCULTRA,429.00,USD,Black / Spatial Audio,Bose Direct,https://demo-store.internal/items/bose-qc-ultra-black,2026-10-11T12:00:00Z,1,Standard launch price
