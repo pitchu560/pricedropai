@@ -15,13 +15,35 @@ const BACKEND_DIR = path.resolve(__dirname, 'AI-Price-Drop-Watcher/backend');
 
 let pythonProcess: ChildProcess | null = null;
 let isShuttingDown = false;
+let restartAttempts = 0;
+const MAX_RESTART_ATTEMPTS = 3;
 
-function startFastAPIServer() {
+function checkPortInUse(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const req = http.get(`http://127.0.0.1:${port}/health`, { timeout: 1000 }, (res) => {
+      resolve(res.statusCode === 200);
+    });
+    req.on('error', () => resolve(false));
+    req.on('timeout', () => {
+      req.destroy();
+      resolve(false);
+    });
+  });
+}
+
+async function startFastAPIServer() {
   if (isShuttingDown) return;
 
   // If BACKEND_URL is provided (e.g., via Vercel service binding), skip local spawn
   if (process.env.BACKEND_URL) {
     console.log(`[Node Host] Using configured BACKEND_URL binding: ${process.env.BACKEND_URL}`);
+    return;
+  }
+
+  // Check if FastAPI backend is already running and answering health checks
+  const isAlreadyRunning = await checkPortInUse(FASTAPI_PORT);
+  if (isAlreadyRunning) {
+    console.log(`[Node Host] FastAPI backend is already active and responding on port ${FASTAPI_PORT}.`);
     return;
   }
 
@@ -47,15 +69,29 @@ function startFastAPIServer() {
 
   pythonProcess.stderr?.on('data', (data) => {
     const text = data.toString().trim();
-    if (text) console.error(`[FastAPI Error] ${text}`);
+    if (text) console.error(`[FastAPI] ${text}`);
   });
 
-  pythonProcess.on('exit', (code, signal) => {
+  pythonProcess.on('exit', async (code, signal) => {
     console.log(`[FastAPI] Process exited with code ${code}, signal ${signal}`);
     pythonProcess = null;
-    if (!isShuttingDown && !process.env.BACKEND_URL) {
-      console.log('[FastAPI] Respawning FastAPI process in 1 second...');
-      setTimeout(startFastAPIServer, 1000);
+
+    if (isShuttingDown || process.env.BACKEND_URL) return;
+
+    // Check if FastAPI is already serving on that port from another daemon
+    const isNowRunning = await checkPortInUse(FASTAPI_PORT);
+    if (isNowRunning) {
+      console.log(`[Node Host] FastAPI backend is operational on port ${FASTAPI_PORT}. No respawn needed.`);
+      return;
+    }
+
+    if (restartAttempts < MAX_RESTART_ATTEMPTS) {
+      restartAttempts++;
+      const delay = restartAttempts * 2000;
+      console.log(`[FastAPI] Attempting restart ${restartAttempts}/${MAX_RESTART_ATTEMPTS} in ${delay}ms...`);
+      setTimeout(startFastAPIServer, delay);
+    } else {
+      console.log(`[FastAPI] Maximum restart attempts (${MAX_RESTART_ATTEMPTS}) reached. Halting auto-restart.`);
     }
   });
 }
@@ -104,7 +140,7 @@ function proxyToFastAPI(req: express.Request, res: express.Response, retryCount 
 }
 
 async function main() {
-  startFastAPIServer();
+  await startFastAPIServer();
 
   const app = express();
 
